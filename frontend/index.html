@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FreshFarm Grocery - Fresh Groceries Delivered</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+        :root {
+            --primary-green: #2d5016;
+            --light-green: #4a7c23;
+            --earth-brown: #8b4513;
+            --cream: #faf8f5;
+            --fresh-lime: #7cb342;
+        }
+        
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: var(--cream);
+        }
+        
+        .brand-text {
+            font-family: 'Fredoka One', cursive;
+            color: var(--primary-green);
+            font-size: 1.5rem;
+        }
+        
+        .navbar {
+            background: linear-gradient(90deg, #ffffff 0%, #f8fff4 100%);
+        }
+        
+        .navbar-brand i {
+            color: var(--fresh-lime);
+        }
+        
+        .btn-cart {
+            background: transparent;
+            border: 2px solid var(--primary-green);
+            color: var(--primary-green);
+            border-radius: 25px;
+            padding: 8px 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-cart:hover {
+            background: var(--primary-green);
+            color: white;
+        }
+        
+        .cart-badge {
+            font-size: 0.65rem;
+            min-width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--light-green) 100%);
+            min-height: 70vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 600px;
+            height: 600px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+        }
+        
+        .hero-title {
+            font-family: 'Fredoka One', cursive;
+            color: white;
+            font-size: 3rem;
+            line-height: 1.2;
+        }
+        
+        .hero-subtitle {
+            color: rgba(255,255,255,0.9);
+            font-size: 1.2rem;
+            margin: 20px 0;
+        }
+        
+        .hero-btn {
+            border-radius: 30px;
+            padding: 12px 35px;
+            font-weight: 600;
+        }
+        
+        .category-btn {
+            border: 2px solid var(--light-green);
+            color: var(--primary-green);
+            background: white;
+            border-radius: 25px;
+            padding: 10px 25px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .category-btn:hover, .category-btn.active {
+            background: var(--primary-green);
+            color: white;
+            border-color: var(--primary-green);
+        }
+        
+        .product-card {
+            background: white;
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .product-image {
+            height: 180px;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: var(--light-green);
+        }
+        
+        .product-price {
+            color: var(--primary-green);
+            font-weight: 700;
+            font-size: 1.3rem;
+        }
+        
+        .btn-add-cart {
+            background: var(--primary-green);
+            color: white;
+            border-radius: 20px;
+            width: 100%;
+        }
+        
+        .btn-add-cart:hover {
+            background: var(--light-green);
+            color: white;
+        }
+        
+        .cart-modal .modal-content {
+            border-radius: 20px;
+            border: none;
+        }
+        
+        .cart-item {
+            border-bottom: 1px solid #eee;
+            padding: 15px 0;
+        }
+        
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+        
+        .order-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            margin-bottom: 15px;
+        }
+        
+        .order-status {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+        
+        .order-status.delivered {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .order-status.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .order-status.processing {
+            background: #cce5ff;
+            color: #004085;
+        }
+        
+        .footer {
+            background: var(--primary-green);
+            color: white;
+            padding: 50px 0 20px;
+        }
+        
+        .footer a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+        }
+        
+        .footer a:hover {
+            color: white;
+        }
+        
+        .loading-spinner {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.9);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .spinner-border {
+            width: 4rem;
+            height: 4rem;
+            color: var(--primary-green);
+        }
+        
+        .toast-notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+        
+        .section-title {
+            font-family: 'Fredoka One', cursive;
+            color: var(--primary-green);
+            margin-bottom: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+            
+            .hero-section {
+                min-height: 50vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Spinner -->
+    <div class="loading-spinner" id="loadingSpinner">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top shadow-sm" id="mainNav">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <i class="fas fa-leaf text-success me-2 fs-3"></i>
+                <span class="brand-text">FreshFarm</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#" data-page="home">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-page="products">Products</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-page="orders">Orders</a>
+                    </li>
+                </ul>
+                <div class="d-flex align-items-center gap-3">
+                    <div class="search-box d-none d-lg-block">
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Search products..." id="searchInput" style="border-radius: 20px 0 0 20px;">
+                            <button class="btn btn-outline-success" type="button" style="border-radius: 0 20px 20px 0;">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button class="btn btn-cart position-relative" id="cartBtn">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-badge" id="cartBadge" style="display: none;">
+                            0
+                        </span>
+                    </button>
+                    <div id="authButtons">
+                        <button class="btn btn-outline-success me-2" data-bs-toggle="modal" data-bs-target="#loginModal">
+                            <i class="fas fa-user"></i> Login
+                        </button>
+                        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#registerModal">
+                            Sign Up
+                        </button>
+                    </div>
+                    <div id="userMenu" style="display: none;">
+                        <div class="dropdown">
+                            <button class="btn btn-outline-success dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user-circle"></i> <span id="userName"></span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="#" data-page="orders"><i class="fas fa-shopping-bag"></i> My Orders</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content" style="padding-top: 70px;">
+        <!-- Home Page -->
+        <section id="homePage" class="page-section">
+            <!-- Hero Banner -->
+            <div class="hero-section">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-lg-7">
+                            <h1 class="hero-title">Fresh Groceries<br>Delivered to Your Door</h1>
+                            <p class="hero-subtitle">Discover the freshest produce from local farms. Organic vegetables, fruits, and artisan products delivered straight to your kitchen.</p>
+                            <button class="btn btn-light btn-lg hero-btn" data-page="products">
+                                <i class="fas fa-shopping-basket me-2"></i> Shop Now
+                            </button>
+                        </div>
+                        <div class="col-lg-5 d-none d-lg-block text-center">
+                            <i class="fas fa-carrot fa-10x" style="color: rgba(255,255,255,0.3);"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Categories -->
+            <div class="container my-5">
+                <h2 class="section-title">Shop by Category</h2>
+                <div class="row g-3 mb-4" id="categoryFilters">
+                    <div class="col-auto">
+                        <button class="category-btn active" data-category="all">
+                            <i class="fas fa-th-large me-2"></i>All
+                        </button>
+                    </div>
+                    <div class="col-auto">
+                        <button class="category-btn" data-category="Vegetables">
+                            <i class="fas fa-carrot me-2"></i>Vegetables
+                        </button>
+                    </div>
+                    <div class="col-auto">
+                        <button class="category-btn" data-category="Fruits">
+                            <i class="fas fa-apple-alt me-2"></i>Fruits
+                        </button>
+                    </div>
+                    <div class="col-auto">
+                        <button class="category-btn" data-category="Dairy">
+                            <i class="fas fa-cheese me-2"></i>Dairy
+                        </button>
+                    </div>
+                    <div class="col-auto">
+                        <button class="category-btn" data-category="Bakery">
+                            <i class="fas fa-bread-slice me-2"></i>Bakery
+                        </button>
+                    </div>
+                    <div class="col-auto">
+                        <button class="category-btn" data-category="Beverages">
+                            <i class="fas fa-glass-water me-2"></i>Beverages
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Products Grid -->
+                <div class="row g-4" id="productsGrid">
+                    <!-- Sample products will be rendered here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Products Page -->
+        <section id="productsPage" class="page-section" style="display: none;">
+            <div class="container py-5">
+                <h2 class="section-title">All Products</h2>
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <select class="form-select" id="categoryFilter">
+                            <option value="">All Categories</option>
+                            <option value="Vegetables">Vegetables</option>
+                            <option value="Fruits">Fruits</option>
+                            <option value="Dairy">Dairy</option>
+                            <option value="Bakery">Bakery</option>
+                            <option value="Beverages">Beverages</option>
+                        </select>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="input-group">
+                            <span class="input-group-text bg-white"><i class="fas fa-search"></i></span>
+                            <input type="text" class="form-control" placeholder="Search products..." id="productsSearchInput">
+                        </div>
+                    </div>
+                </div>
+                <div class="row g-4" id="productsGridPage">
+                    <!-- Products loaded dynamically -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Orders Page -->
+        <section id="ordersPage" class="page-section" style="display: none;">
+            <div class="container py-5">
+                <h2 class="section-title">My Orders</h2>
+                <div class="row">
+                    <div class="col-12">
+                        <div id="ordersList">
+                            <p class="text-muted">Please log in to view your orders.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Cart Modal -->
+    <div class="modal fade cart-modal" id="cartModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header border-0">
+                    <h3 class="modal-title"><i class="fas fa-shopping-cart me-2"></i>Your Cart</h3>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="cartItems">
+                        <p class="text-muted text-center py-4">Your cart is empty</p>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <div class="w-100">
+                        <div class="d-flex justify-content-between mb-3">
+                            <h4>Total:</h4>
+                            <h4 id="cartTotal">$0.00</h4>
+                        </div>
+                        <button class="btn btn-success w-100" id="checkoutBtn">
+                            <i class="fas fa-credit-card me-2"></i>Proceed to Checkout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0">
+                    <h3 class="modal-title"><i class="fas fa-leaf text-success me-2"></i>Welcome Back</h3>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="loginForm">
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white"><i class="fas fa-envelope"></i></span>
+                                <input type="email" class="form-control" id="loginEmail" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white"><i class="fas fa-lock"></i></span>
+                                <input type="password" class="form-control" id="loginPassword" required>
+                            </div>
+                        </div>
+                        <div class="alert alert-danger" id="loginError" style="display: none;"></div>
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="fas fa-sign-in-alt me-2"></i>Login
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div class="modal fade" id="registerModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0">
+                    <h3 class="modal-title"><i class="fas fa-leaf text-success me-2"></i>Create Account</h3>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="registerForm">
+                        <div class="mb-3">
+                            <label class="form-label">Username</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white"><i class="fas fa-user"></i></span>
+                                <input type="text" class="form-control" id="registerUsername" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white"><i class="fas fa-envelope"></i></span>
+                                <input type="email" class="form-control" id="registerEmail" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Full Name (Optional)</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white"><i class="fas fa-id-card"></i></span>
+                                <input type="text" class="form-control" id="registerFullName">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white"><i class="fas fa-lock"></i></span>
+                                <input type="password" class="form-control" id="registerPassword" required minlength="8">
+                            </div>
+                            <small class="text-muted">Minimum 8 characters</small>
+                        </div>
+                        <div class="alert alert-danger" id="registerError" style="display: none;"></div>
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="fas fa-user-plus me-2"></i>Sign Up
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3 toast-notification">
+        <div class="toast" id="toastNotification" role="alert">
+            <div class="toast-header">
+                <i class="fas fa-check-circle text-success me-2"></i>
+                <strong class="me-auto">Notification</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body" id="toastMessage"></div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <h5><i class="fas fa-leaf text-success me-2"></i>FreshFarm</h5>
+                    <p class="text-light">Farm fresh produce delivered to your door. Quality guaranteed from local farms.</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-light" data-page="home">Home</a></li>
+                        <li><a href="#" class="text-light" data-page="products">Products</a></li>
+                        <li><a href="#" class="text-light" data-page="orders">Orders</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5>Contact</h5>
+                    <p class="text-light"><i class="fas fa-envelope me-2"></i>hello@freshfarm.com</p>
+                    <p class="text-light"><i class="fas fa-phone me-2"></i>1-800-FRESH-FARM</p>
+                    <p class="text-light"><i class="fas fa-map-marker-alt me-2"></i>123 Farm Lane, Garden City</p>
+                </div>
+            </div>
+            <hr>
+            <p class="text-center text-light mb-0">&copy; 2024 FreshFarm Grocery. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/app.js?v=2"></script>
+</body>
+</html>

@@ -21,3 +21,7 @@ htmlcov/
 .env
 .DS_Store
 Thumbs.db
+.playwright-mcp
+node_modules/
+backend/node_modules/
+frontend/node_modules/

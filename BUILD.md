@@ -4,16 +4,15 @@ A cross-platform grocery store application with a modern, farm-fresh aesthetic.
 
 ## Prerequisites
 
-- Python 3.8 or higher
+- Node.js 18+ 
 - MySQL Server 8.0+
 
 ## Platform-Specific Setup
 
 ### Windows
 
-1. **Install Python**
-   - Download from https://www.python.org/downloads/
-   - Or install from Microsoft Store (search "Python")
+1. **Install Node.js**
+   - Download from https://nodejs.org/
 
 2. **Install MySQL**
    - Download MySQL Installer from https://dev.mysql.com/downloads/installer/
@@ -23,125 +22,89 @@ A cross-platform grocery store application with a modern, farm-fresh aesthetic.
 3. **Setup Database**
    - Open MySQL Workbench or Command Line
    - Create database: `CREATE DATABASE freshfarm_db;`
-   - Or run the schema: `source database/schema.sql`
+   - Run the schema: `Get-Content database/schema.sql | mysql -u root -p`
 
 4. **Install Dependencies**
    ```cmd
-   cd freshfarm-grocery
-   pip install -r requirements.txt
+   cd freshfarm-grocery\backend
+   npm install
    ```
 
-5. **Run Application**
+5. **Configure Environment**
+   - Create `.env` in backend folder:
+   ```env
+   DB_HOST=localhost
+   DB_USER=root
+   DB_PASSWORD=your_mysql_password
+   DB_NAME=freshfarm_db
+   JWT_SECRET=freshfarm-jwt-secret-2024
+   PORT=5001
+   FRONTEND_URL=http://localhost:5173
+   ```
+
+6. **Run Application**
    ```cmd
-   set DB_PASSWORD=your_mysql_password
-   python app.py
+   cd freshfarm-grocery\backend
+   node server.js
    ```
 
-6. **Access**
-   - Open browser: http://localhost:5000
+7. **Access**
+   - Open browser: http://localhost:5001
 
-### macOS
+### macOS / Linux
 
-1. **Install Python**
+1. **Install Node.js**
    ```bash
-   # Using Homebrew (recommended)
-   brew install python
+   # Using nvm (recommended)
+   nvm install 18
    
-   # Or download from python.org
+   # Or using package manager
+   # macOS: brew install node
+   # Ubuntu: sudo apt install nodejs npm
    ```
 
 2. **Install MySQL**
    ```bash
+   # macOS
    brew install mysql
    brew services start mysql
+   
+   # Ubuntu/Debian
+   sudo apt update
+   sudo apt install mysql-server
+   sudo systemctl start mysql
    ```
 
 3. **Setup Database**
    ```bash
    mysql -u root -p
    CREATE DATABASE freshfarm_db;
+   mysql -u root -p freshfarm_db < database/schema.sql
    ```
 
 4. **Install Dependencies**
    ```bash
-   cd freshfarm-grocery
-   pip3 install -r requirements.txt
+   cd freshfarm-grocery/backend
+   npm install
    ```
 
-5. **Run Application**
+5. **Configure Environment**
+   - Create `.env` in backend folder (same as Windows)
+
+6. **Run Application**
    ```bash
-   DB_PASSWORD=your_mysql_password python3 app.py
+   cd freshfarm-grocery/backend
+   node server.js
    ```
 
-6. **Access**
-   - Open browser: http://localhost:5000
-
-### Linux (Ubuntu/Debian)
-
-1. **Install Python and MySQL**
-   ```bash
-   sudo apt update
-   sudo apt install python3 python3-pip mysql-server
-   sudo systemctl start mysql
-   ```
-
-2. **Setup Database**
-   ```bash
-   sudo mysql
-   CREATE DATABASE freshfarm_db;
-   ```
-
-3. **Install Dependencies**
-   ```bash
-   cd freshfarm-grocery
-   pip3 install -r requirements.txt
-   ```
-
-4. **Run Application**
-   ```bash
-   DB_PASSWORD=your_mysql_password python3 app.py
-   ```
-
-5. **Access**
-   - Open browser: http://localhost:5000
-
-### Android (Termux)
-
-1. **Install Termux** from F-Droid or Play Store
-
-2. **Install Python and MySQL**
-   ```bash
-   pkg install python mysql
-   ```
-
-3. **Setup Database**
-   ```bash
-   mysql_install_db
-   mysqld_safe &
-   sleep 5
-   mysql -u root
-   CREATE DATABASE freshfarm_db;
-   ```
-
-4. **Install Dependencies**
-   ```bash
-   cd freshfarm-grocery
-   pip install -r requirements.txt
-   ```
-
-5. **Run Application**
-   ```bash
-   python app.py
-   ```
-
-6. **Access**
-   - Open browser: http://localhost:5000
+7. **Access**
+   - Open browser: http://localhost:5001
 
 ## Environment Variables
 
-Create a `.env` file or set environment variables:
+Create a `.env` file in the backend folder:
 
-```bash
+```env
 # Database Configuration
 DB_HOST=localhost
 DB_USER=root
@@ -149,97 +112,173 @@ DB_PASSWORD=your_password
 DB_NAME=freshfarm_db
 
 # Security
-SECRET_KEY=your-secret-key
-JWT_SECRET_KEY=your-jwt-secret-key
+JWT_SECRET=freshfarm-jwt-secret-2024
+
+# Server
+PORT=5001
+FRONTEND_URL=http://localhost:5173
+NODE_ENV=development
 ```
 
-## Production Deployment
+## Project Structure (Clean Architecture)
 
-### Using Gunicorn
-
-```bash
-pip install gunicorn
-gunicorn -w 4 -b 0.0.0.0:5000 app:app
+```
+freshfarm-grocery/
+├── frontend/                    # Client-side application
+│   ├── index.html              # Main HTML entry point
+│   ├── styles.css              # Styles
+│   └── app.js                  # Frontend logic
+├── backend/                     # Server-side application
+│   ├── server.js               # Express.js server
+│   ├── package.json            # Node.js dependencies
+│   ├── package-lock.json
+│   └── .env                    # Environment variables
+├── database/                    # Database layer
+│   └── schema.sql              # MySQL schema + seed data
+├── BUILD.md                    # This file
+├── SETUP.md                    # Setup instructions
+└── README.md                   # Project overview
 ```
 
-### Using Docker
+## API Endpoints
 
-```dockerfile
-FROM python:3.11-slim
-WORKDIR /app
-COPY requirements.txt .
-RUN pip install -r requirements.txt
-COPY . .
-EXPOSE 5000
-CMD ["python", "app.py"]
-```
+### Health
+- `GET /api/health` - Health check
 
-Build and run:
-```bash
-docker build -t freshfarm .
-docker run -p 5000:5000 -e DB_HOST=host.docker.internal freshfarm
-```
+### Authentication
+- `POST /api/auth/register` - Register new user
+- `POST /api/auth/login` - Login user
+- `POST /api/auth/logout` - Logout user
+- `GET /api/auth/me` - Get current user
+- `GET /api/auth/check` - Check auth status
+
+### Products
+- `GET /api/products` - List products (with category, search, pagination)
+- `GET /api/products/:id` - Get single product
+- `GET /api/products/category/:category` - Products by category
+- `GET /api/categories` - List all categories
+
+### Cart (requires auth)
+- `GET /api/cart` - Get user's cart
+- `POST /api/cart` - Add item to cart
+- `PUT /api/cart/:id` - Update cart item quantity
+- `DELETE /api/cart/:id` - Remove item from cart
+- `DELETE /api/cart` - Clear cart
+
+### Orders (requires auth)
+- `POST /api/orders` - Place order
+- `GET /api/orders` - List user's orders
+- `GET /api/orders/:id` - Get order details
 
 ## Running Tests
 
 ```bash
-# Manual testing
-# 1. Register new user
-curl -X POST http://localhost:5000/api/auth/register \
+# Start server
+cd backend && node server.js &
+
+# Health check
+curl http://localhost:5001/api/health
+
+# Register user
+curl -X POST http://localhost:5001/api/auth/register \
   -H "Content-Type: application/json" \
-  -d '{"username":"testuser","email":"test@example.com","password":"password123"}'
+  -d '{"username":"testuser","email":"test@example.com","password":"password123","fullName":"Test User"}'
 
-# 2. Login
-curl -X POST http://localhost:5000/api/auth/login \
+# Login
+curl -X POST http://localhost:5001/api/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"email":"test@example.com","password":"password123"}'
+  -d '{"email":"test@example.com","password":"password123"}' -c cookies.txt
 
-# 3. Get products
-curl http://localhost:5000/api/products
+# Get products
+curl -b cookies.txt http://localhost:5001/api/products
 
-# 4. Get categories
-curl http://localhost:5000/api/categories
+# Get categories
+curl -b cookies.txt http://localhost:5001/api/categories
+
+# Add to cart
+curl -X POST http://localhost:5001/api/cart \
+  -H "Content-Type: application/json" \
+  -b cookies.txt \
+  -d '{"productId": 1, "quantity": 2}'
+
+# Get cart
+curl -b cookies.txt http://localhost:5001/api/cart
 ```
 
 ## Security Features
 
 - JWT tokens stored ONLY in HttpOnly cookies (never in localStorage)
-- Passwords hashed with bcrypt (12 salt rounds)
+- Passwords hashed with bcrypt (10 salt rounds)
 - Backend-only token validation
 - CORS configured for specific origins
+- SQL injection prevention via parameterized queries
 
-## Project Structure
+## Today's Work (2026-10-02)
 
-```
-freshfarm-grocery/
-├── app.py                 # Flask application
-├── requirements.txt       # Python dependencies
-├── templates/
-│   └── index.html    # Frontend HTML
-├── static/
-│   ├── css/
-│   │   └── styles.css
-│   └── js/
-│       └── app.js
-├── database/
-│   └── schema.sql    # Database schema
-└── BUILD.md         # This file
-```
+✅ **Completed:**
+- Restructured project into clean `/frontend`, `/backend`, `/database` architecture
+- Removed duplicate Flask backend, kept Node.js/Express
+- Fixed API endpoint paths and database queries
+- Fixed cookie-based authentication (HttpOnly cookies)
+- Fixed MySQL connection and query parameter issues
+- Cleaned up duplicate product data (520 → 20 products)
+- Verified API endpoints work: health, products, categories, auth, cart
+
+🔄 **In Progress:**
+- Backend server running on port 5001, serving frontend static files
+- Frontend integration with backend APIs verified via curl
+
+## Next Session - Start Here
+
+1. **Test full frontend flow** - Open http://localhost:5001 in browser and test:
+   - User registration/login
+   - Product browsing & filtering
+   - Cart operations (add, update, remove)
+   - Order placement
+   - Order history view
+
+2. **Fix any frontend JS issues** - Check console for errors, ensure:
+   - API_BASE in app.js matches backend port (5001)
+   - Cookie credentials work cross-origin
+   - Modal interactions (login, register, cart)
+
+3. **Add missing features:**
+   - Product image handling
+   - Order confirmation UI
+   - Search functionality
+   - Category filter dropdown
+
+4. **Production readiness:**
+   - Add input validation middleware
+   - Add rate limiting
+   - Add request logging
+   - Add error boundary components
+   - Write unit/integration tests
+
+5. **Deployment preparation:**
+   - Add Dockerfile for backend
+   - Add production build scripts
+   - Configure reverse proxy (nginx)
 
 ## Troubleshooting
 
 ### Database Connection Error
 - Check MySQL is running: `mysql -u root -p`
-- Verify credentials in DB_CONFIG
+- Verify credentials in backend/.env
 - Create database if not exists
 
 ### Port Already in Use
-- Kill existing process: `fuser -k 5000/tcp`
-- Or run on different port: `python app.py` then edit to use port 5001
+- Kill existing process: `taskkill /F /IM node.exe` (Windows) or `pkill node` (Linux/Mac)
+- Or change PORT in .env
 
 ### CORS Error
-- Ensure origin matches in CORS configuration
-- Check browser console for details
+- Ensure FRONTEND_URL in .env matches where frontend is served
+- Backend serves frontend at / via express.static()
+
+### Authentication Issues
+- Check cookie is being sent (HttpOnly, SameSite=Lax)
+- Verify JWT_SECRET matches between login and protected routes
+- Check browser DevTools Application tab for cookies
 
 ## License
 
